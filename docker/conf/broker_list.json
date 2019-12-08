@@ -1,16 +1,11 @@
 [
   {
-    "name": "simnow",
+    "name": "MK",
     "type": "ctp",
-    "broker_id": "9999",
-    "product_info": "abcd",
-    "trading_fronts": ["tcp://218.202.237.33:10002"]
-  },
-  {
-    "name": "simnow724",
-    "type": "ctp",
-    "broker_id": "9999",
-    "product_info": "abcd",
-    "trading_fronts": ["tcp://180.168.146.187:10030"]
+    "is_fens":false,
+    "broker_id": "1025",
+    "product_info": "FSTS",
+    "auth_code":"VQ5NP9QEZ8G43CJJ",
+    "trading_fronts": ["tcp://101.226.250.179:51205"]
   }
 ]
