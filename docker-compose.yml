@@ -3,18 +3,28 @@ version: '3'
 services:
   open-trade-gateway:
     image: opentradegateway
+    build: .
     volumes:
       - ./docker/conf:/etc/open-trade-gateway
       - ./docker/user:/var/local/lib/open-trade-gateway
       - ./docker/log:/var/log/open-trade-gateway
+      - ./:/usr/src/shinnytech/open-trade-gateway
     ports:
       - "7788:7788"
     expose:
       - "7788"
     entrypoint:
-    entrypoint:
       - "/bin/sh"
       - "-ecx"
       - >
-          open-trade-gateway
+        chmod +x "/usr/src/shinnytech/open-trade-gateway/run.sh" && "/usr/src/shinnytech/open-trade-gateway/run.sh"
+    #       open-trade-gateway
 
+
+
+# COPY . /usr/src/shinnytech/open-trade-gateway
+# WORKDIR /usr/src/shinnytech/open-trade-gateway
+# RUN make && make install
+# RUN echo "/usr/local/bin/" >> /etc/ld.so.conf && \
+    # echo "/usr/local/lib/" >> /etc/ld.so.conf
+# RUN ldconfig
