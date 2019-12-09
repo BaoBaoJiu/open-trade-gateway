@@ -2,8 +2,8 @@
 set -x
 echo "/usr/local/bin/" >> /etc/ld.so.conf
 echo "/usr/local/lib/" >> /etc/ld.so.conf
-ldconfig
 
 cd /usr/src/shinnytech/open-trade-gateway
-make -j4 && make install
+make -j8 && make install
+ldconfig
 open-trade-gateway
