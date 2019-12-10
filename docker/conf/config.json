@@ -1,5 +1,6 @@
 {
   "host": "127.0.0.1",
   "port": 7788,
+  "auto_confirm_settlement": true,
   "user_file_path": "/var/local/lib/open-trade-gateway"
 }

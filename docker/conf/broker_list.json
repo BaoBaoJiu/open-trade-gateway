@@ -1,11 +1,21 @@
 [
   {
     "name": "MK",
-    "type": "ctp",
+    "type": "ctpse",
+    "is_fens":false,
+    "broker_id": "1025",
+    "product_info": "client_fsts_1.0.1",
+    "auth_code":"VQ5NP9QEZ8G43CJJ",
+    "trading_fronts": ["tcp://101.226.250.179:51205"]
+  },
+  {
+    "name": "MK.BAK",
+    "type": "ctpse",
     "is_fens":false,
     "broker_id": "1025",
     "product_info": "FSTS",
     "auth_code":"VQ5NP9QEZ8G43CJJ",
+    "app_id":"client_fsts_1.0.1",
     "trading_fronts": ["tcp://101.226.250.179:51205"]
   }
 ]
