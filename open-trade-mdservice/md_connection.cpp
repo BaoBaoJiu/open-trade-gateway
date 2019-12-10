@@ -14,6 +14,8 @@ const char* md_host = "openmd.shinnytech.com";
 const char* md_port = "80";
 const char* md_path = "/t/md/front/mobile";
 
+#define LOG_OFF true
+
 class MdParser
 	: public RapidSerialize::Serializer<MdParser>
 {
@@ -250,10 +252,12 @@ bool ToString(rapidjson::Document& rootDoc, std::string& jsonStr)
 
 void  md_connection::OnMessage(const std::string &json_str)
 {
+	#if !LOG_OFF
 	Log().WithField("fun","OnMessage")
 		.WithField("key","mdservice")
 		.WithField("msglen",(int)json_str.size())		
 		.Log(LOG_INFO,"md_connection receive md message");
+	#endif
 				
 	SendTextMsg(m_req_peek_message);
 
@@ -302,11 +306,13 @@ void  md_connection::OnMessage(const std::string &json_str)
 		rapidjson::Document jsonDoc;
 		rapidjson::Pointer(strKey.c_str()).Set(jsonDoc,m.value);
 		ToString(jsonDoc,strDiff);
+		#if !LOG_OFF
 		Log().WithField("fun","OnMessage")
 			.WithField("key","mdservice")
 			.WithPack("diff",strDiff)
 			.WithPack("merge",strMerge)
 			.Log(LOG_INFO, "md_connection receive md message");	
+		#endif
 	}
 }
 
