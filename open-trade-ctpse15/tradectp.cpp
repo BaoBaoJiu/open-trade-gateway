@@ -10023,6 +10023,7 @@ void traderctp::SendDataDirect(int connId, const std::string& msg)
 
 int traderctp::RegSystemInfo()
 {
+	return 0;
 	CThostFtdcUserSystemInfoField f;
 	memset(&f, 0, sizeof(f));
 	strcpy_x(f.BrokerID, _req_login.broker.ctp_broker_id.c_str());
