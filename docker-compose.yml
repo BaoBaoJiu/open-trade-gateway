@@ -18,13 +18,3 @@ services:
       - "-ecx"
       - >
         chmod +x "/usr/src/shinnytech/open-trade-gateway/run.sh" && "/usr/src/shinnytech/open-trade-gateway/run.sh"
-    #       open-trade-gateway
-
-
-
-# COPY . /usr/src/shinnytech/open-trade-gateway
-# WORKDIR /usr/src/shinnytech/open-trade-gateway
-# RUN make && make install
-# RUN echo "/usr/local/bin/" >> /etc/ld.so.conf && \
-    # echo "/usr/local/lib/" >> /etc/ld.so.conf
-# RUN ldconfig
