@@ -3535,7 +3535,8 @@ void traderctp::SendUserData()
 		{
 			//重算所有持仓项的持仓盈亏和浮动盈亏
 			double total_position_profit = 0;
-			double total_float_profit = 0;						
+			double total_float_profit = 0;		
+			double total_option_value = 0;
 			for (auto it = m_data.m_positions.begin();
 				it != m_data.m_positions.end(); ++it)
 			{
@@ -3590,6 +3591,12 @@ void traderctp::SendUserData()
 						{
 							ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 							ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+
+							//如果是期权
+							if (ps.ins->product_class == kProductClassOptions)
+							{
+								total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+							}
 						}
 						else
 						{
@@ -3601,6 +3608,12 @@ void traderctp::SendUserData()
 						{
 							ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 							ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+
+							//如果是期权
+							if (ps.ins->product_class == kProductClassOptions)
+							{
+								total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+							}
 						}
 						else
 						{
@@ -3626,9 +3639,19 @@ void traderctp::SendUserData()
 					{
 						ps.last_price = last_price;
 
-						ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
-						ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
-						ps.position_profit = ps.position_profit_long + ps.position_profit_short;
+						//如果是期权
+						if (ps.ins->product_class == kProductClassOptions)
+						{
+							ps.position_profit_long = 0;
+							ps.position_profit_short = 0;
+							ps.position_profit = 0;
+						}
+						else
+						{
+							ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
+							ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
+							ps.position_profit = ps.position_profit_long + ps.position_profit_short;
+						}						
 
 						ps.float_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.open_cost_long;
 						ps.float_profit_short = ps.open_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
@@ -3638,6 +3661,11 @@ void traderctp::SendUserData()
 						{
 							ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 							ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+							//如果是期权
+							if (ps.ins->product_class == kProductClassOptions)
+							{
+								total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+							}
 						}
 						else
 						{
@@ -3649,6 +3677,11 @@ void traderctp::SendUserData()
 						{
 							ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 							ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+							//如果是期权
+							if (ps.ins->product_class == kProductClassOptions)
+							{
+								total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+							}
 						}
 						else
 						{
@@ -3691,6 +3724,11 @@ void traderctp::SendUserData()
 							{
 								ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 								ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+								//如果是期权
+								if (ps.ins->product_class == kProductClassOptions)
+								{
+									total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+								}
 							}
 							else
 							{
@@ -3702,6 +3740,11 @@ void traderctp::SendUserData()
 							{
 								ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 								ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+								//如果是期权
+								if (ps.ins->product_class == kProductClassOptions)
+								{
+									total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+								}
 							}
 							else
 							{
@@ -3726,10 +3769,20 @@ void traderctp::SendUserData()
 						{
 							ps.last_price = last_price;
 
-							ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
-							ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
-							ps.position_profit = ps.position_profit_long + ps.position_profit_short;
-
+							//如果是期权
+							if (ps.ins->product_class == kProductClassOptions)
+							{
+								ps.position_profit_long = 0;
+								ps.position_profit_short = 0;
+								ps.position_profit = 0;
+							}
+							else
+							{
+								ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
+								ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
+								ps.position_profit = ps.position_profit_long + ps.position_profit_short;
+							}
+							
 							ps.float_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.open_cost_long;
 							ps.float_profit_short = ps.open_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
 							ps.float_profit = ps.float_profit_long + ps.float_profit_short;
@@ -3738,6 +3791,11 @@ void traderctp::SendUserData()
 							{
 								ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 								ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+								//如果是期权
+								if (ps.ins->product_class == kProductClassOptions)
+								{
+									total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+								}
 							}
 							else
 							{
@@ -3749,6 +3807,11 @@ void traderctp::SendUserData()
 							{
 								ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 								ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+								//如果是期权
+								if (ps.ins->product_class == kProductClassOptions)
+								{
+									total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+								}
 							}
 							else
 							{
@@ -3762,10 +3825,10 @@ void traderctp::SendUserData()
 					}							
 				}
 							
-				if (IsValid(ps.position_profit))
+				if (IsValid(ps.position_profit) && (ps.ins->product_class != kProductClassOptions))
 					total_position_profit += ps.position_profit;
 
-				if (IsValid(ps.float_profit))
+				if (IsValid(ps.float_profit) && (ps.ins->product_class != kProductClassOptions))
 					total_float_profit += ps.float_profit;
 			}			
 			//重算资金账户
@@ -3816,6 +3879,7 @@ void traderctp::SendUserData()
 					acc.float_profit = total_float_profit;
 					acc.available += av_diff;
 					acc.balance += dv;
+					acc.value_balance = acc.balance + total_option_value;
 					if (IsValid(acc.margin) && IsValid(acc.balance) && !IsZero(acc.balance))
 					{
 						acc.risk_ratio = acc.margin / acc.balance;
@@ -3877,6 +3941,7 @@ void traderctp::SendUserDataImd(int connectId)
 	//重算所有持仓项的持仓盈亏和浮动盈亏
 	double total_position_profit = 0;
 	double total_float_profit = 0;
+	double total_option_value = 0;
 	for (auto it = m_data.m_positions.begin();
 		it != m_data.m_positions.end(); ++it)
 	{
@@ -3931,6 +3996,11 @@ void traderctp::SendUserDataImd(int connectId)
 				{
 					ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 					ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+					//如果是期权
+					if (ps.ins->product_class == kProductClassOptions)
+					{
+						total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+					}
 				}
 				else
 				{
@@ -3942,6 +4012,11 @@ void traderctp::SendUserDataImd(int connectId)
 				{
 					ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 					ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+					//如果是期权
+					if (ps.ins->product_class == kProductClassOptions)
+					{
+						total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+					}
 				}
 				else
 				{
@@ -3967,10 +4042,20 @@ void traderctp::SendUserDataImd(int connectId)
 			{
 				ps.last_price = last_price;
 
-				ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
-				ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
-				ps.position_profit = ps.position_profit_long + ps.position_profit_short;
-
+				//如果是期权
+				if (ps.ins->product_class == kProductClassOptions)
+				{
+					ps.position_profit_long = 0;
+					ps.position_profit_short = 0;
+					ps.position_profit = 0;
+				}
+				else
+				{
+					ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
+					ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
+					ps.position_profit = ps.position_profit_long + ps.position_profit_short;
+				}
+				
 				ps.float_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.open_cost_long;
 				ps.float_profit_short = ps.open_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
 				ps.float_profit = ps.float_profit_long + ps.float_profit_short;
@@ -3979,6 +4064,11 @@ void traderctp::SendUserDataImd(int connectId)
 				{
 					ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 					ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+					//如果是期权
+					if (ps.ins->product_class == kProductClassOptions)
+					{
+						total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+					}
 				}
 				else
 				{
@@ -3990,6 +4080,12 @@ void traderctp::SendUserDataImd(int connectId)
 				{
 					ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 					ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+
+					//如果是期权
+					if (ps.ins->product_class == kProductClassOptions)
+					{
+						total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+					}
 				}
 				else
 				{
@@ -4032,6 +4128,11 @@ void traderctp::SendUserDataImd(int connectId)
 					{
 						ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 						ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+						//如果是期权
+						if (ps.ins->product_class == kProductClassOptions)
+						{
+							total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+						}
 					}
 					else
 					{
@@ -4043,6 +4144,11 @@ void traderctp::SendUserDataImd(int connectId)
 					{
 						ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 						ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+						//如果是期权
+						if (ps.ins->product_class == kProductClassOptions)
+						{
+							total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+						}
 					}
 					else
 					{
@@ -4067,10 +4173,20 @@ void traderctp::SendUserDataImd(int connectId)
 				{
 					ps.last_price = last_price;
 
-					ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
-					ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
-					ps.position_profit = ps.position_profit_long + ps.position_profit_short;
-
+					//如果是期权
+					if (ps.ins->product_class == kProductClassOptions)
+					{
+						ps.position_profit_long = 0;
+						ps.position_profit_short = 0;
+						ps.position_profit = 0;
+					}
+					else
+					{
+						ps.position_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.position_cost_long;
+						ps.position_profit_short = ps.position_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
+						ps.position_profit = ps.position_profit_long + ps.position_profit_short;
+					}
+					
 					ps.float_profit_long = ps.last_price * ps.volume_long * ps.ins->volume_multiple - ps.open_cost_long;
 					ps.float_profit_short = ps.open_cost_short - ps.last_price * ps.volume_short * ps.ins->volume_multiple;
 					ps.float_profit = ps.float_profit_long + ps.float_profit_short;
@@ -4079,6 +4195,11 @@ void traderctp::SendUserDataImd(int connectId)
 					{
 						ps.open_price_long = ps.open_cost_long / (ps.volume_long * ps.ins->volume_multiple);
 						ps.position_price_long = ps.position_cost_long / (ps.volume_long * ps.ins->volume_multiple);
+						//如果是期权
+						if (ps.ins->product_class == kProductClassOptions)
+						{
+							total_option_value += ps.volume_long * ps.ins->volume_multiple*ps.last_price;
+						}
 					}
 					else
 					{
@@ -4090,6 +4211,11 @@ void traderctp::SendUserDataImd(int connectId)
 					{
 						ps.open_price_short = ps.open_cost_short / (ps.volume_short * ps.ins->volume_multiple);
 						ps.position_price_short = ps.position_cost_short / (ps.volume_short * ps.ins->volume_multiple);
+						//如果是期权
+						if (ps.ins->product_class == kProductClassOptions)
+						{
+							total_option_value -= ps.volume_short * ps.ins->volume_multiple*ps.last_price;
+						}
 					}
 					else
 					{
@@ -4103,10 +4229,10 @@ void traderctp::SendUserDataImd(int connectId)
 			}
 		}
 
-		if (IsValid(ps.position_profit))
+		if (IsValid(ps.position_profit) && (ps.ins->product_class != kProductClassOptions))
 			total_position_profit += ps.position_profit;
 
-		if (IsValid(ps.float_profit))
+		if (IsValid(ps.float_profit) && (ps.ins->product_class != kProductClassOptions))
 			total_float_profit += ps.float_profit;
 	}
 	//重算资金账户
@@ -4159,6 +4285,7 @@ void traderctp::SendUserDataImd(int connectId)
 			acc.float_profit = total_float_profit;
 			acc.available += av_diff;
 			acc.balance += dv;
+			acc.value_balance = acc.balance + total_option_value;
 			if (IsValid(acc.margin) && IsValid(acc.balance) && !IsZero(acc.balance))
 				acc.risk_ratio = acc.margin / acc.balance;
 			else
